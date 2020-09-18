@@ -2,11 +2,12 @@
 bytes extended read write
 
 ## Examples echo
+
+```rust
 use bytes::{BufMut, Bytes};
 use bytes::Buf;
 use xbinary::*;
 
-```rust
 fn main()
 {
     let mut w = XBWrite::new();
