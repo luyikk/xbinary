@@ -1,7 +1,6 @@
 use bytes::{BytesMut, Bytes, Buf};
 use bytes::buf::BufMut;
 use std::mem::MaybeUninit;
-use std::mem;
 
 
 #[derive(Debug)]
@@ -226,7 +225,7 @@ impl XBRead{
 
             let b=self.buffer[offset];
             offset+=1;
-            v|=((b&0x7F)<<shift) as u16;
+            v|=((b&0x7F) as u16)<<shift;
             if b&0x80 ==0{
                 return (offset,v);
             }
@@ -252,7 +251,7 @@ impl XBRead{
 
             let b=self.buffer[offset];
             offset+=1;
-            v|=((b&0x7F)<<shift) as u32;
+            v|=((b&0x7F) as u32)<<shift;
             if b&0x80 ==0{
                 return (offset,v);
             }
@@ -278,7 +277,7 @@ impl XBRead{
 
             let b=self.buffer[offset];
             offset+=1;
-            v|=((b&0x7F)<<shift) as u64;
+            v|=((b&0x7F) as u64)<<shift;
             if b&0x80 ==0{
                 return (offset,v);
             }
@@ -293,29 +292,59 @@ impl XBRead{
         (offset,v)
     }
 
-    pub fn read_string(&mut self)->Option<String>{
+    pub fn read_string_bit7_len(&mut self)->Option<String>{
         let (offset,len)=self.read_bit7_u32();
-        if offset == 0{
+        if offset == 0||len==0{
             None
         }
         else{
             self.advance(offset);
-            let str=String::from_utf8_lossy(&self.buffer[..len as usize]).to_string();
-            self.advance(len as usize);
-            Some(str)
+            Some(self.read_string(len as usize))
         }
     }
 
-    pub fn read_vec(&mut self)->Option<Vec<u8>>{
+    pub fn read_vec_bit7_len(&mut self)->Option<Vec<u8>>{
         let (offset,len)=self.read_bit7_u32();
-        if offset == 0{
+        if offset == 0||len==0{
             None
         }
         else{
             self.advance(offset);
-            let vec=self.buffer[..len as usize].to_vec();
-            self.advance(len as usize);
-            Some(vec)
+            Some(self.read_vec(len as usize))
         }
     }
+
+    pub fn read_string_u32_le(&mut self)->Option<String>{
+        let len=self.get_u32_le();
+        if len==0||len==0{
+            None
+        }
+        else {
+            Some(self.read_string(len as usize))
+        }
+    }
+
+    pub fn read_vec_u32_le(&mut self)->Option<Vec<u8>>{
+        let len=self.get_u32_le();
+        if len==0||len==0{
+            None
+        }
+        else {
+            Some(self.read_vec(len as usize))
+        }
+    }
+
+    pub fn read_string(&mut self,len:usize)->String{
+        let str=String::from_utf8_lossy(&self.buffer[..len as usize]).to_string();
+        self.advance(len as usize);
+        str
+    }
+
+    pub fn read_vec(&mut self,len:usize)->Vec<u8>{
+        let vec=self.buffer[..len as usize].to_vec();
+        self.advance(len as usize);
+        vec
+    }
+
+
 }
