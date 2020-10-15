@@ -250,7 +250,7 @@ impl XBRead{
         let mut offset=0;
         let mut shift=0;
         while shift<2*8 {
-            if offset>self.buffer.len(){
+            if offset>=self.buffer.len(){
                 return (0,v);
             }
 
@@ -276,7 +276,7 @@ impl XBRead{
         let mut offset=0;
         let mut shift=0;
         while shift<4*8 {
-            if offset>self.buffer.len(){
+            if offset>=self.buffer.len(){
                 return (0,v);
             }
 
@@ -302,7 +302,7 @@ impl XBRead{
         let mut offset=0;
         let mut shift=0;
         while shift<8*8 {
-            if offset>self.buffer.len(){
+            if offset>=self.buffer.len(){
                 return (0,v);
             }
 
