@@ -30,6 +30,14 @@ impl BufMut for XBWrite{
     }
 }
 
+impl From<BytesMut> for XBWrite{
+    fn from(p: BytesMut) -> Self {
+        XBWrite{
+            buffer:p,
+            position:0
+        }
+    }
+}
 
 impl XBWrite{
     pub fn new()->XBWrite{
@@ -38,6 +46,8 @@ impl XBWrite{
             position:0
         }
     }
+
+
 
     pub fn len(&self)->usize{
         self.buffer.len()
