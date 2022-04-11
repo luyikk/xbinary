@@ -1,7 +1,7 @@
 use bytes::{BytesMut, Bytes, Buf};
 use bytes::buf::BufMut;
 use std::mem::MaybeUninit;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 
 #[derive(Debug)]
@@ -184,12 +184,23 @@ impl Deref for XBWrite{
     }
 }
 
+impl DerefMut for XBWrite {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+       &mut self.buffer
+    }
+}
+
 impl AsRef<[u8]> for XBWrite {
     fn as_ref(&self) -> &[u8] {
         self.buffer.as_ref()
     }
 }
 
+impl AsMut<[u8]> for XBWrite {
+    fn as_mut(&mut self) -> &mut [u8] {
+        self.buffer.as_mut()
+    }
+}
 
 fn zig_zag_encode_u16(v:i16)->u16{
     ((v << 1) ^ (v >> 15)) as u16
